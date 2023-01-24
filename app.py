@@ -23,7 +23,7 @@ link["index"] = '/'
 
 
 def init_database():
-    db = sqlite3.connect(DATABASE_NAME)
+    db = sqlite3.connect(app.config["DATABASE"])
     cursor = db.cursor()
 
     # initialize page content
