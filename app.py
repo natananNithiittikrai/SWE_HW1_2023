@@ -93,7 +93,7 @@ def summary():
 def product():
     init_database()
     msg = None
-    db = sqlite3.connect(DATABASE_NAME)
+    db = sqlite3.connect(app.config["DATABASE"])
     cursor = db.cursor()
 
     cursor.execute("SELECT * FROM products")
