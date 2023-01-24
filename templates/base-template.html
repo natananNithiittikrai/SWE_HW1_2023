@@ -48,6 +48,14 @@
             .container { padding-top: 70px; }
         </style>
     </head>
+    <script>
+    document.querySelectorAll('.btn').forEach(function(element) {
+        element.addEventListener('click', function() {
+            window.location.href = element.dataset.href;
+        });
+    });
+</script>
+
     <body>
         <nav class="navbar navbar-expand-lg" style="background-color: purple; position: fixed;width: 100%;z-index: 2;">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,14 +67,17 @@
                 <button type="button" class="btn" style="background-color: white; color: purple;" onclick="location.reload();location.href='{{ link.index }}'">Dashboard</button>
             </div>
                 <div class="col-auto">
-                  <button type="button" class="btn " style="background-color: white; color: purple;" onclick="location.reload();location.href='{{ link.location }}'">Location</button>
-                </div>
-                <div class="col-auto">
-                  <button type="button" class="btn " style="background-color: white; color: purple;" onclick="location.reload();location.href='{{ link.product }}'">Products</button>
-                </div>
-                <div class="col-auto">
-                  <button type="button" class="btn" style="background-color: white; color: purple;" onclick="location.reload();location.href='{{ link.movement }}'">Product Movement</button>
-                </div>
+    <button type="button" class="btn" style="background-color: white; color: purple;" data-href="{{ link.index }}">Dashboard</button>
+</div>
+<div class="col-auto">
+    <button type="button" class="btn " style="background-color: white; color: purple;" data-href="{{ link.location }}">Location</button>
+</div>
+<div class="col-auto">
+    <button type="button" class="btn " style="background-color: white; color: purple;" data-href="{{ link.product }}">Products</button>
+</div>
+<div class="col-auto">
+    <button type="button" class="btn" style="background-color: white; color: purple;" data-href="{{ link.movement }}">Product Movement</button>
+</div>
             </div>
 	    </nav>
         {% block content %}
