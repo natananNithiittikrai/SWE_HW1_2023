@@ -70,7 +70,7 @@ def summary():
     init_database()
     msg = None
     q_data, location, products = None, None, None
-    db = sqlite3.connect(DATABASE_NAME)
+    db = sqlite3.connect(app.config["DATABASE"])
     cursor = db.cursor()
     try:
         cursor.execute("SELECT * FROM location")  # <---------------------------------FIX THIS
