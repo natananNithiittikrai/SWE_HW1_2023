@@ -17,7 +17,7 @@
                             </a>
                         </td>
                         <td>
-                            <button name="button" type="button" class="btn btn-success" value= "edit" data-toggle="modal" data-target="#edit_{{ product[0] }}" >edit</button><br>
+                            <button id="edit_button_{{ product[0] }}" name="button" type="button" class="btn btn-primary" value= "edit" data-toggle="modal" data-target="#edit_{{ product[0] }}" >edit</button><br>
                             <div id="edit_{{ product[0] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="trans_message" aria-hidden="true">
                                 <form action="{{ url_for('edit', type='product') }}" method="post" class="base_form">
                                 <div class="modal-dialog" role="document">
@@ -80,7 +80,7 @@
                 for(let i=0;i<clear_fields.length;i++){
                     clear_fields[i].reset();
                 }
-                let all = document.getElementsByClassName("btn btn-primary");
+                let all = document.getElementById("edit_button_{{ product[0] }}");
                 for(let i=0;i<all.length;i++){
                     all[i].disabled = false;
                 }
