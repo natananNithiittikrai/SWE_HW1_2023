@@ -38,8 +38,7 @@
         <form action = "{{ url_for('movement') }}" method = "POST">
             <div class="form-row" title="Add logs">
                 <div class="col">
-                    <input name= "prod_name" id="prod_name" list="products" placeholder="Product Name" class="form-control" autocomplete="off" required autofocus>
-                    <datalist id="products">
+                    <input name= "prod_name" type="text" id="prod_name" list="products" placeholder="Product Name" class="form-control" autocomplete="off" required autofocus>                     <datalist id="products">
                         {% for product in products %}
                             <option value="{{ product[1] }}" id="prod_{{ product[0] }}">
                         {% endfor %}
