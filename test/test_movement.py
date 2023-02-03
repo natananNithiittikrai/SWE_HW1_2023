@@ -17,8 +17,6 @@ class MovementTestCase(unittest.TestCase):
             allow_redirects=True,
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual()
-        # self.assertEqual(b"Transaction added successfully", response.data)
 
     def test_movement_unallocated_product(self):
         url = "http://127.0.0.1:5000/movement"
@@ -34,7 +32,6 @@ class MovementTestCase(unittest.TestCase):
         product_name = response_data.get("prod_name")
         location = response_data.get("to_loc")
         self.assertEqual(product_name, data.get("prod_name"))
-        # self.assertEqual(b"Transaction added successfully", response.data)
 
     def test_movement_post_request_with_invalid_data(self):
         response = self.app.post(
@@ -43,8 +40,6 @@ class MovementTestCase(unittest.TestCase):
             follow_redirects=True,
         )
         self.assertEqual(response.status_code, 200)
-        # self.assertIn(b"An error occurred", response.data)
-
 
 if __name__ == "__main__":
     unittest.main()

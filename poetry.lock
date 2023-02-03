@@ -48,6 +48,18 @@ files = [
 ]
 
 [[package]]
+name = "csrf"
+version = "0.1b1"
+description = "simply generate & validate BREACH-resistant CSRF tokens"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "csrf-0.1b1-py3-none-any.whl", hash = "sha256:87d34ec729dd321e80e6dcbad90537df112089204fcf9e488a8bbd1301831841"},
+    {file = "csrf-0.1b1.tar.gz", hash = "sha256:b44eca40f74a46d9f5846c78a3f2488123d051346e09e3133af0029bcaf33a66"},
+]
+
+[[package]]
 name = "exceptiongroup"
 version = "1.1.0"
 description = "Backport of PEP 654 (exception groups)"
@@ -325,4 +337,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">3.7"
-content-hash = "63d17a359eb04b1f20f19ca458e3f5d0fea2334713fb2f8f5044043bb9d0dc10"
+content-hash = "764bda0a80c201ec0a39fde3ba0399538922667fd7372d496f6d4c6fc6ab3fc4"

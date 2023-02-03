@@ -4,15 +4,7 @@ import requests
 
 
 class TestEditEndpoint(unittest.TestCase):
-    # def test_edit_location(self):
-    #     url = "http://127.0.0.1:5000/edit?type=location"
-    #     data = {"loc_id": "1", "loc_name": "Test Location"}
-    #     response = requests.post(url, data=data, allow_redirects=True)
-    #
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.headers["Location"], "http://127.0.0.1:5000/location")
-
-    def test_edit_location(self):
+     def test_edit_location(self):
         url = "http://127.0.0.1:5000/edit?type=location"
         pre_data = {"loc_id": "8", "loc_name": "Test Location"}
         response = requests.post(url, data=pre_data, allow_redirects=True)

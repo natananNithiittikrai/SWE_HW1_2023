@@ -5,10 +5,6 @@ import requests
 
 class TestProduct(unittest.TestCase):
     URL = "http://127.0.0.1:5000/product"
-
-    def setup(self):
-        self.url = "http://127.0.0.1:5000/product"
-
     def test_product_creation(self):
         # Test adding a new product
         data = {"prod_name": "Test Product", "prod_quantity": "100"}
