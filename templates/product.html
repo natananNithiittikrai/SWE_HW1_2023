@@ -2,7 +2,7 @@
 {% block content %}
     <div class="container">
         <table class="table">
-            <thead>                
+            <thead>
                 <th scope="col">Product Name</th>
                 <th scope="col">Quantity</th>
             </thead>
@@ -34,7 +34,7 @@
                                                     }
                                                     const curr_qty = {{ product[2] }};
                                                     let in_qty = parseInt(document.getElementById("input_{{ product[0] }}").value);
-                                                    if(in_qty > curr_qty){                                                     
+                                                    if(in_qty > curr_qty){
                                                         for(let i=0;i<all.length;i++){
                                                             all[i].disabled = false;
                                                         }
@@ -58,7 +58,7 @@
                 <!-- Inserting data -->
                 <tr>
                     <form action = "{{ url_for('product') }}" method = "POST">
-                        
+
                         <td>
                             <input name = "prod_name" placeholder="Product Name" required autofocus>
                         </td>

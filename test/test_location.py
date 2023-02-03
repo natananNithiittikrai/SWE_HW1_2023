@@ -1,6 +1,8 @@
-import unittest
-import requests
 import sqlite3
+import unittest
+
+import requests
+
 
 class TestLocation(unittest.TestCase):
     def setUp(self):
@@ -39,6 +41,6 @@ class TestLocation(unittest.TestCase):
     #     cursor.execute("DELETE FROM location")
     #     db.commit()
 
+
 if __name__ == "__main__":
     unittest.main()
-

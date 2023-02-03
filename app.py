@@ -4,9 +4,10 @@ import os
 import sqlite3
 
 # imports - third party imports
-from flask import Flask, redirect, jsonify
+from flask import Flask, jsonify, redirect
 from flask import render_template as render
 from flask import request, url_for
+from werkzeug import Response
 
 DATABASE_NAME = "inventory.sqlite"
 
@@ -109,7 +110,7 @@ def summary():
 
 
 @app.route("/product", methods=["POST", "GET"])
-def product():
+def product() -> Response | str:
     init_database()
     msg = None
     db = sqlite3.connect(DATABASE_NAME)
@@ -195,7 +196,7 @@ def location():
 
 
 @app.route("/movement", methods=["POST", "GET"])
-def movement():
+def movement() -> Response:
     init_database()
     msg = None
     db = sqlite3.connect(DATABASE_NAME)
@@ -249,10 +250,6 @@ def movement():
                 (temp_prod_name + temp_loc_name + (sum_to_loc[0] - sum_from_loc[0],))
             ]
 
-    # CHECK if reductions are calculated as well!
-    # summary data --> in format:
-    # {'Asus Zenfone 2': {'Mahalakshmi': 50, 'Gorhe': 50},
-    # 'Prada watch': {'Malad': 50, 'Mahalakshmi': 115}, 'Apple iPhone': {'Airoli': 75}}
     alloc_json = {}
     for row in log_summary:
         try:
@@ -378,12 +375,13 @@ def movement():
     #     logs=logistics_data,
     #     database=log_summary,
     # )
-        # print a transaction message if exists!
-        # if msg:
-        #     print(msg)
-        #     return jsonify({"message": msg})
-        #
-    return jsonify({
+    # print a transaction message if exists!
+    # if msg:
+    #     print(msg)
+    #     return jsonify({"message": msg})
+    #
+    return jsonify(
+        {
             "title": "ProductMovement",
             "link": link,
             "trans_message": msg,
@@ -391,12 +389,13 @@ def movement():
             "locations": locations,
             "allocated": alloc_json,
             "logs": logistics_data,
-            "database": log_summary
-        })
+            "database": log_summary,
+        }
+    )
 
 
 @app.route("/delete")
-def delete():
+def delete() -> Response:
     type_ = request.args.get("type")
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
@@ -452,6 +451,7 @@ def delete():
         response_data["message"] = "Product deleted successfully"
     return jsonify(response_data)
 
+
 @app.route("/edit", methods=["POST", "GET"])
 def edit():
     type_ = request.args.get("type")
@@ -470,7 +470,7 @@ def edit():
             db.commit()
 
         # return redirect(url_for("location"))
-        return jsonify({'loc_id': loc_id, 'loc_name': loc_name})
+        return jsonify({"loc_id": loc_id, "loc_name": loc_name})
 
     elif type_ == "product" and request.method == "POST":
         prod_id = request.form["prod_id"]
@@ -495,7 +495,9 @@ def edit():
         db.commit()
 
         # return redirect(url_for("product"))
-        return jsonify({'prod_id': prod_id, 'prod_name': prod_name, 'prod_quantity': prod_quantity})
+        return jsonify(
+            {"prod_id": prod_id, "prod_name": prod_name, "prod_quantity": prod_quantity}
+        )
 
     # return render(url_for(type_))
-    return jsonify({'error': 'Invalid type'})
+    return jsonify({"error": "Invalid type"})

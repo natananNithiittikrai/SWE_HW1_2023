@@ -7,9 +7,9 @@
         {% else %}
             <table class="table" id="summary">
                 <tbody>
-                <!-- Showing current state (just as index.html -->                
+                <!-- Showing current state (just as index.html -->
                 {% for location in locations %}
-                    <tr>                       
+                    <tr>
                         <td><strong>{{ location[1] }}</strong></td>
                         <td><strong>Product</strong></td>
                         <td><strong>Quantity</strong></td>
@@ -26,7 +26,7 @@
                         {% endif %}
                     {% endfor %}
                     {% endfor %}
-                    
+
                 </tbody>
             </table>
         {% endif %}
@@ -55,7 +55,7 @@
                     <!--input name="quantity" placeholder="Quantity" class="form-control" autocomplete="off" required-->
                     <input name="quantity" type="range" min="0" value="" class="slider" id="slider_range" required title="Product Range">
                     <p>Value: <span id="show_selected"></span>&nbsp;&nbsp;&nbsp;<span id="max_limit" class="font-weight-light"></span></p>
-                </div>             
+                </div>
 
                 <div class="col">
                     <input type= "submit" id="submit" class="btn btn-info btn-group-toggle" value= "submit" /><br>
@@ -70,7 +70,7 @@
 
         <br><hr><br>
 
-        
+
 
     </div>
 

@@ -1,8 +1,11 @@
-import requests
 import unittest
+
+import requests
+
 
 class TestProduct(unittest.TestCase):
     URL = "http://127.0.0.1:5000/product"
+
     def setup(self):
         self.url = "http://127.0.0.1:5000/product"
 
@@ -17,6 +20,7 @@ class TestProduct(unittest.TestCase):
         data = {"prod_name": "", "prod_quantity": ""}
         response = requests.post(self.URL, data=data, allow_redirects=True)
         self.assertEqual(response.status_code, 200)
+
 
 if __name__ == "__main__":
     unittest.main()

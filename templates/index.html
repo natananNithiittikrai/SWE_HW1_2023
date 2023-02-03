@@ -12,13 +12,13 @@
             <div style="float:left;width:50%">
                 <table class="table">
                     <thead>
-                        <tr>                            
+                        <tr>
                             <th scope="col">Location Name</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for location in locations %}
-                            <tr>                               
+                            <tr>
                                 <td>{{ location[1] }}</td>
                             </tr>
                         {% endfor %}
@@ -35,14 +35,14 @@
             <div style="float:right;width:50%;">
                 <table class="table">
                     <thead>
-                        <tr>                            
+                        <tr>
                             <th scope="col">Product Name</th>
                             <th scope="col">Count</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for product in products %}
-                            <tr>                               
+                            <tr>
                                 <td>{{ product[1] }}</td>
                                 <td>{{ product[2] }}</td>
                             </tr>
