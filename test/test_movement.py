@@ -2,8 +2,6 @@ import unittest
 
 import requests
 
-from app import app
-
 
 class MovementTestCase(unittest.TestCase):
     def test_movement_post_request(self):
@@ -34,7 +32,6 @@ class MovementTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         product_name = response_data.get("prod_name")
-        product_quantity = response_data.get("quanity")
         location = response_data.get("to_loc")
         self.assertEqual(product_name, data.get("prod_name"))
         # self.assertEqual(b"Transaction added successfully", response.data)

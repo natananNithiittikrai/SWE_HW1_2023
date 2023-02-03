@@ -30,10 +30,11 @@ def init_database():
     # initialize page content
     cursor.execute(
         """
-    CREATE TABLE IF NOT EXISTS products(prod_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    prod_name TEXT UNIQUE NOT NULL,
-                    prod_quantity INTEGER NOT NULL,
-                    unallocated_quantity INTEGER);
+    CREATE TABLE IF NOT EXISTS
+    products(prod_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    prod_name TEXT UNIQUE NOT NULL,
+    prod_quantity INTEGER NOT NULL,
+    unallocated_quantity INTEGER);
     """
     )
     cursor.execute(
@@ -453,7 +454,7 @@ def delete() -> Response:
 
 
 @app.route("/edit", methods=["POST", "GET"])
-def edit():
+def edit() -> Response:
     type_ = request.args.get("type")
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
