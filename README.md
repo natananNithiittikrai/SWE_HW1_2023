@@ -1,3 +1,6 @@
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=natananNithiittikrai_SWE_HW1_2023&metric=coverage)](https://sonarcloud.io/summary/new_code?id=natananNithiittikrai_SWE_HW1_2023)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=natananNithiittikrai_SWE_HW1_2023&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=natananNithiittikrai_SWE_HW1_2023)
+
 # SWE_HW1_2023 by Natanan Nithiittikrai 6380852
 ## Vending Machine Tracking Application
 
@@ -10,7 +13,7 @@ Components: product_id (unique), name, quantity
 - Create a product
 - Edit the product quantity
 
-### Location 
+### Location
 Components: location_id, location_name
 
 - Get all location
