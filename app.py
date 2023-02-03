@@ -8,12 +8,11 @@ from flask import Flask, Response, jsonify, redirect
 from flask import render_template as render
 from flask import request, url_for
 
-
 DATABASE_NAME = "inventory.sqlite"
 
 # setting up Flask instance
 app = Flask(__name__)
-app.config['WTF_CSRF_ENABLED'] = False
+app.config["WTF_CSRF_ENABLED"] = False
 app.config["SECRET_KEY"] = "secret-key"
 app.config.from_mapping(
     SECRET_KEY="dev",

@@ -17,5 +17,6 @@ class TestLocation(unittest.TestCase):
         response = requests.post(self.url, data=data, allow_redirects=True)
         self.assertEqual(response.status_code, 200)
 
+
 if __name__ == "__main__":
     unittest.main()
