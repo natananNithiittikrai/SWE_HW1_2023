@@ -1,16 +1,16 @@
 {% extends 'base-template.html' %}
 {% block content %}
     <div class="container">
-    <h3 align="center">Dashboard</h3>
+        <h3 style="text-align: center">Dashboard</h3>
         <div style="height: 50%;width: 100%; float: left">
             {% if locations == None or locations|length == 0 %}
             <div style="float: left;width:50%;">
-                <h3 align="center" class="font-weight-light">No Data Available Yet</h3>
+                <h3  class="text center font-weight-light">No Data Available Yet</h3>
             </div>
             {% else %}
-            <!-- Div to list all locations -->
             <div style="float:left;width:50%">
                 <table class="table">
+                <caption>Div to list all locations</caption>
                     <thead>
                         <tr>
                             <th scope="col">Location Name</th>
@@ -28,12 +28,12 @@
         {% endif %}
         {% if products == None or products|length == 0 %}
             <div style="float: right;width: 50%;">
-                <h3 align="center" class="font-weight-light">No Product Data Available Yet</h3>
+                <h3 class="text center font-weight-light">No Product Data Available Yet</h3>
             </div>
         {% else %}
-            <!-- Div to list all products -->
             <div style="float:right;width:50%;">
                 <table class="table">
+                <caption>Div to list all product</caption>
                     <thead>
                         <tr>
                             <th scope="col">Product Name</th>
@@ -54,15 +54,15 @@
         </div>
     </div>
 
-    <div class="container" style="float: contour;" align="center">
-    <h3 align="center">Products Summary</h3>
+    <div class="container" style="float: contour; text-align: center">
+    <h3 style="text-align: center">Products Summary</h3>
         <div class="form-horizontal" title="Summary">
         {% if database == None or database|length == 0 %}
-            <h3 align="center" class="font-weight-light">Summary not available yet</h3>
+            <h3 class="text-center font-weight-light">Summary not available yet</h3>
         {% else %}
-            <!-- Summary needed -->
             <div>
                 <table class="table">
+                <caption>Summary Table</caption>
                     <thead>
                         <tr>
                             <th scope="col">Product</th>

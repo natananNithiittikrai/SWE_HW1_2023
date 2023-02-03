@@ -1,40 +1,47 @@
 {% extends 'base-template.html' %}
 {% block content %}
     <div class="container">
-        <h3 align="center" class="font-weight-light">Summary</h3>
+        <h3 class="text-center font-weight-light">Summary</h3>
         {% if database == None or database|length == 0 %}
-            <h3 align="center" class="font-weight-light">Summary not available yet</h3>
+            <h3 class="text-center font-weight-light">Summary not available yet</h3>
         {% else %}
             <table class="table" id="summary">
-                <tbody>
-                <!-- Showing current state (just as index.html -->
-                {% for location in locations %}
-                    <tr>
-                        <td><strong>{{ location[1] }}</strong></td>
-                        <td><strong>Product</strong></td>
-                        <td><strong>Quantity</strong></td>
-                    </tr>
-                    {% for data in database %}
-                        {% if data[1] == location[1] %}
-                            {% if data[2] != 0 %}
-                            <tr>
-                                <td></td>
-                                <td>{{ data[0] }}</td>
-                                <td>{{ data[2] }}</td>
-                            </tr>
-                            {% endif %}
-                        {% endif %}
-                    {% endfor %}
-                    {% endfor %}
-
-                </tbody>
-            </table>
+            <caption>Summary Table</caption>
+  <thead>
+    <tr>
+      <th>Location</th>
+      <th>Product</th>
+      <th>Quantity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Showing current state (just as index.html -->
+    {% for location in locations %}
+    <tr>
+      <td><strong>{{ location[1] }}</strong></td>
+      <td><strong>Product</strong></td>
+      <td><strong>Quantity</strong></td>
+    </tr>
+    {% for data in database %}
+    {% if data[1] == location[1] %}
+    {% if data[2] != 0 %}
+    <tr>
+      <td></td>
+      <td>{{ data[0] }}</td>
+      <td>{{ data[2] }}</td>
+    </tr>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+    {% endfor %}
+  </tbody>
+</table>
         {% endif %}
 
         <br><hr><br>
 
         <!-- Inserting data -->
-        <h3 align="center" class="font-weight-light">Make Product Movements</h3>
+        <h3 class="text-center font-weight-light">Make Product Movements</h3>
         <form action = "{{ url_for('movement') }}" method = "POST">
             <div class="form-row" title="Add logs">
                 <div class="col">
@@ -52,7 +59,6 @@
                     <input name="to_loc" id="to_loc" list="locations_to_from" placeholder="To Location" class="form-control" autocomplete="off">
                 </div>
                 <div class="col slide-container">
-                    <!--input name="quantity" placeholder="Quantity" class="form-control" autocomplete="off" required-->
                     <input name="quantity" type="range" min="0" value="" class="slider" id="slider_range" required title="Product Range">
                     <p>Value: <span id="show_selected"></span>&nbsp;&nbsp;&nbsp;<span id="max_limit" class="font-weight-light"></span></p>
                 </div>

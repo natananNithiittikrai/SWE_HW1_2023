@@ -2,6 +2,7 @@
 {% block content %}
     <div class="container">
         <table class="table">
+         <caption>Location</caption>
             <thead>
                 <th scope="col">Location Name</th>
                 <th></th>
@@ -22,7 +23,9 @@
                                 <form action="{{ url_for('edit', type='location') }}" method="post">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
-                                            <div class="modal-body"><input name="loc_name" placeholder="{{ location[1] }}"></div>
+                                            <div class="modal-body"><label>
+                                                <input name="loc_name" placeholder="{{ location[1] }}">
+                                            </label></div>
                                             <div class="modal-footer">
                                                 <input name="loc_id" value="{{ location[0] }}" hidden aria-hidden="true">
                                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
