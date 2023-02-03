@@ -4,16 +4,15 @@ import os
 import sqlite3
 
 # imports - third party imports
-from flask import Flask, jsonify, redirect
+from flask import Flask, Response, jsonify, redirect
 from flask import render_template as render
 from flask import request, url_for
-from flask import Response
 
 DATABASE_NAME = "inventory.sqlite"
 
 # setting up Flask instance
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret-key'
+app.config["SECRET_KEY"] = "secret-key"
 app.config.from_mapping(
     SECRET_KEY="dev",
     DATABASE=os.path.join(app.instance_path, "database", DATABASE_NAME),
