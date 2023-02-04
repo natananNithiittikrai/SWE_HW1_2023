@@ -198,7 +198,7 @@ def location():
 
 
 @app.route("/movement", methods=["POST", "GET"])
-def movement() -> Response:
+def movement() -> str:
     init_database()
     msg = None
     db = sqlite3.connect(DATABASE_NAME)
@@ -364,36 +364,36 @@ def movement() -> Response:
         # print a transaction message if exists!
         if msg:
             print(msg)
-            # return redirect(url_for("movement"))
-            return jsonify({"message": msg})
-    # return render(
-    #     "movement.html",
-    #     title="ProductMovement",
-    #     link=link,
-    #     trans_message=msg,
-    #     products=products,
-    #     locations=locations,
-    #     allocated=alloc_json,
-    #     logs=logistics_data,
-    #     database=log_summary,
-    # )
+            return redirect(url_for("movement"))
+
+    return render(
+        "movement.html",
+        title="ProductMovement",
+        link=link,
+        trans_message=msg,
+        products=products,
+        locations=locations,
+        allocated=alloc_json,
+        logs=logistics_data,
+        database=log_summary,
+    )
     # print a transaction message if exists!
     # if msg:
     #     print(msg)
     #     return jsonify({"message": msg})
     #
-    return jsonify(
-        {
-            "title": "ProductMovement",
-            "link": link,
-            "trans_message": msg,
-            "products": products,
-            "locations": locations,
-            "allocated": alloc_json,
-            "logs": logistics_data,
-            "database": log_summary,
-        }
-    )
+    # return jsonify(
+    #     {
+    #         "title": "ProductMovement",
+    #         "link": link,
+    #         "trans_message": msg,
+    #         "products": products,
+    #         "locations": locations,
+    #         "allocated": alloc_json,
+    #         "logs": logistics_data,
+    #         "database": log_summary,
+    #     }
+    # )
 
 
 @app.route("/delete")
