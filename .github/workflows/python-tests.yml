@@ -1,6 +1,10 @@
 name: Python tests
 
-on: [ push ]
+on:
+  push:
+    branches:
+      - main        # The default branch
+      - HW3    # The other branches to be analyzed
 
 env:
   PYTHON_VERSION: "3.9"
