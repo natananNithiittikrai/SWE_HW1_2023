@@ -198,7 +198,7 @@ def location():
 
 
 @app.route("/movement", methods=["POST", "GET"])
-def movement() -> str:
+def movement():
     init_database()
     msg = None
     db = sqlite3.connect(DATABASE_NAME)
@@ -263,109 +263,75 @@ def movement() -> str:
             alloc_json[row[0]] = {}
             alloc_json[row[0]][row[1]] = row[2]
     alloc_json = json.dumps(alloc_json)
+    return movement1(cursor, db, msg, products, locations, alloc_json, logistics_data, log_summary)
 
+@app.route("/movement", methods=["POST", "GET"])
+def movement1(cursor, db, msg, products, locations, alloc_json, logistics_data, log_summary):
+    SUCCESSFUL = "Transaction added successfully"
     if request.method == "POST":
-        # transaction times are stored in UTC
         prod_name = request.form["prod_name"]
-        from_loc = request.form["from_loc"]
-        to_loc = request.form["to_loc"]
-        quantity = request.form["quantity"]
-        TRANSACTION_SUCCESSFUL = "Transaction added successfully"
-        # if no 'from loc' is given, that means the product is being shipped to a machine (init condition)
-        if from_loc in [None, "", " "]:
-            try:
-                cursor.execute(
-                    """
-                    INSERT INTO logistics (prod_id, to_loc_id, prod_quantity)
-                    SELECT products.prod_id, location.loc_id, ?
-                    FROM products, location
-                    WHERE products.prod_name == ? AND location.loc_name == ?
-                """,
-                    (quantity, prod_name, to_loc),
-                )
+        from_loc = request.form.get("from_loc", None)
+        to_loc = request.form.get("to_loc", None)
+        quantity = int(request.form["quantity"])
 
-                # IMPORTANT to maintain consistency
-                cursor.execute(
-                    """
+        if not from_loc:
+            cursor.execute(
+                """
+                INSERT INTO logistics (prod_id, to_loc_id, prod_quantity)
+                SELECT products.prod_id, location.loc_id, ?
+                FROM products, location
+                WHERE products.prod_name == ? AND location.loc_name == ?
+                """,
+                (quantity, prod_name, to_loc),
+            )
+            cursor.execute(
+                """
                 UPDATE products
                 SET unallocated_quantity = unallocated_quantity - ?
                 WHERE prod_name == ?
                 """,
-                    (quantity, prod_name),
-                )
-                db.commit()
-
-            except sqlite3.Error as e:
-                msg = f"An error occurred: {e.args[0]}"
-            else:
-                msg = TRANSACTION_SUCCESSFUL
-
-        elif to_loc in [None, "", " "]:
-            print("To Location wasn't specified, will be unallocated")
-            try:
-                cursor.execute(
-                    """
+                (quantity, prod_name),
+            )
+            db.commit()
+            msg = SUCCESSFUL
+        elif not to_loc:
+            cursor.execute(
+                """
                 INSERT INTO logistics (prod_id, from_loc_id, prod_quantity)
                 SELECT products.prod_id, location.loc_id, ?
                 FROM products, location
                 WHERE products.prod_name == ? AND location.loc_name == ?
                 """,
-                    (quantity, prod_name, from_loc),
-                )
-
-                # IMPORTANT to maintain consistency
-                cursor.execute(
-                    """
+                (quantity, prod_name, from_loc),
+            )
+            cursor.execute(
+                """
                 UPDATE products
                 SET unallocated_quantity = unallocated_quantity + ?
                 WHERE prod_name == ?
                 """,
-                    (quantity, prod_name),
-                )
-                db.commit()
-
-            except sqlite3.Error as e:
-                msg = f"An error occurred: {e.args[0]}"
-            else:
-                msg = TRANSACTION_SUCCESSFUL
-
-        # if 'from loc' and 'to_loc' given the product is being shipped between machine
+                (quantity, prod_name),
+            )
+            db.commit()
+            msg = SUCCESSFUL
         else:
-            try:
-                cursor.execute(
-                    "SELECT loc_id FROM location WHERE loc_name == ?", (from_loc,)
-                )
-                from_loc = "".join([str(x[0]) for x in cursor.fetchall()])
-
-                cursor.execute(
-                    "SELECT loc_id FROM location WHERE loc_name == ?", (to_loc,)
-                )
-                to_loc = "".join([str(x[0]) for x in cursor.fetchall()])
-
-                cursor.execute(
-                    "SELECT prod_id FROM products WHERE prod_name == ?", (prod_name,)
-                )
-                prod_id = "".join([str(x[0]) for x in cursor.fetchall()])
-
-                cursor.execute(
-                    """
+            cursor.execute("SELECT loc_id FROM location WHERE loc_name == ?", (from_loc,))
+            from_loc = cursor.fetchone()[0]
+            cursor.execute("SELECT loc_id FROM location WHERE loc_name == ?", (to_loc,))
+            to_loc = cursor.fetchone()[0]
+            cursor.execute("SELECT prod_id FROM products WHERE prod_name == ?", (prod_name,))
+            prod_id = cursor.fetchone()[0]
+            cursor.execute(
+                """
                 INSERT INTO logistics (prod_id, from_loc_id, to_loc_id, prod_quantity)
                 VALUES (?, ?, ?, ?)
                 """,
-                    (prod_id, from_loc, to_loc, quantity),
-                )
-                db.commit()
-
-            except sqlite3.Error as e:
-                msg = f"An error occurred: {e.args[0]}"
-            else:
-                msg = TRANSACTION_SUCCESSFUL
-
-        # print a transaction message if exists!
-        if msg:
-            print(msg)
-            return redirect(url_for("movement"))
-
+                (prod_id, from_loc, to_loc, quantity),
+            )
+            db.commit()
+            msg = SUCCESSFUL
+        print(msg)
+        return redirect(url_for("movement"))
     return render(
         "movement.html",
         title="ProductMovement",
