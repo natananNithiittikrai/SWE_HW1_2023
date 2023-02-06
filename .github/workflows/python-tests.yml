@@ -1,19 +1,11 @@
 name: Python tests
 
-<<<<<<< HEAD
 on:
   push:
     branches:
       - main        # The default branch
       - HW3    # The other branches to be analyzed
 
-=======
-on: 
-  push:
-    branches:
-      - main        # The default branch
-      - branch-*    # The other branches to be analyzed
->>>>>>> b4d5eae (add other branch)
 env:
   PYTHON_VERSION: "3.9"
   POETRY_VERSION: "1.2.0"
@@ -93,7 +85,7 @@ jobs:
           retention-days: 7
 
   build-and-upload:
-    needs: [test-and-coverage]
+    needs: [ test-and-coverage ]
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-20.04
     steps:
