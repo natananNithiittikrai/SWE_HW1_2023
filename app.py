@@ -7,7 +7,7 @@ import sqlite3
 from flask import Flask, Response, jsonify, redirect
 from flask import render_template as render
 from flask import request, url_for
-from werkzeug import Response
+from flask_wtf import CSRFProtect
 
 DATABASE_NAME = "inventory.sqlite"
 
@@ -68,6 +68,8 @@ def init_database():
 def start():
     # setting up Flask instance
     cur_app = Flask(__name__)
+    csrf = CSRFProtect()
+    csrf.init_app(app)
     # cur_app.config.update(
     #     SECRET_KEY="dev",
     #     DATABASE=os.path.join(cur_app.instance_path, "database", DATABASE_NAME),
@@ -273,7 +275,6 @@ def movement():
     )
 
 
-@app.route("/movement", methods=["POST", "GET"])
 def movement1(
     cursor, db, msg, products, locations, alloc_json, logistics_data, log_summary
 ):
