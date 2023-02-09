@@ -21,13 +21,16 @@ def test_edit():
 
     # Test product type POST request
     response = app.test_client().post(
-        '/edit?type=product',
-        data={"prod_id": 17, "prod_name": "product12", "prod_quantity": 40}
+        "/edit?type=product",
+        data={"prod_id": 17, "prod_name": "product12", "prod_quantity": 40},
     )
     assert response.status_code == 302
 
     # test POST request with type product and missing data
-    response = app.test_client().post('/edit?type=product', data={"prod_id": "1", "prod_name": "", "prod_quantity": ""})
+    response = app.test_client().post(
+        "/edit?type=product",
+        data={"prod_id": "1", "prod_name": "", "prod_quantity": ""},
+    )
     assert response.status_code == 302
 
     # test GET request with unknown type
