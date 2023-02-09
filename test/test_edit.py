@@ -11,27 +11,24 @@ def test_edit():
     response = app.test_client().post(
         endpoint, data={"loc_id": 1, "loc_name": "new_location_name"}
     )
-    assert response.status_code == 200
+    assert response.status_code == 302
 
     # test POST request with type location and missing data
     response = app.test_client().post(
         "/edit?type=location", data={"loc_id": "1", "loc_name": ""}
     )
-    assert response.status_code == 200
-
-    # assert response.get_json().get("loc_id") == 1
-    # assert response.get_json().get("loc_name") == "new_location_name"
+    assert response.status_code == 302
 
     # Test product type POST request
-    # response = app.test_client().post(
-    #     '/edit?type=product',
-    #     data={"prod_id": 6, "prod_name": "Pringles", "prod_quantity": 120}
-    # )
-    # assert response.status_code == 302
+    response = app.test_client().post(
+        '/edit?type=product',
+        data={"prod_id": 17, "prod_name": "product12", "prod_quantity": 40}
+    )
+    assert response.status_code == 302
 
     # test POST request with type product and missing data
-    # response = app.test_client().post('/edit?type=product', data={"prod_id": "1", "prod_name": "", "prod_quantity": ""})
-    # assert response.status_code == 302
+    response = app.test_client().post('/edit?type=product', data={"prod_id": "1", "prod_name": "", "prod_quantity": ""})
+    assert response.status_code == 302
 
     # test GET request with unknown type
     response = app.test_client().get("/edit?type=unknown")
