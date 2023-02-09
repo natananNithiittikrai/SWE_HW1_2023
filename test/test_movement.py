@@ -1,45 +1,42 @@
-# import unittest
-#
-# import requests
-#
-#
-# class MovementTestCase(unittest.TestCase):
-#     def test_movement_post_request(self):
-#         url = "http://127.0.0.1:5000/movement"
-#         response = requests.post(
-#             url,
-#             data=dict(
-#                 prod_name="Changed Product",
-#                 from_loc="MUIC New Building",
-#                 to_loc="Test Location",
-#                 quantity="50",
-#             ),
-#             allow_redirects=True,
-#         )
-#         self.assertEqual(response.status_code, 200)
-#
-#     def test_movement_unallocated_product(self):
-#         url = "http://127.0.0.1:5000/movement"
-#         data = {
-#             "prod_name": "Fanta",
-#             "from_loc": "",
-#             "to_loc": "Test Location",
-#             "quantity": "50",
-#         }
-#         response = requests.post(url, data=data, allow_redirects=True)
-#         self.assertEqual(response.status_code, 200)
-#         response_data = response.json()
-#         product_name = response_data.get("prod_name")
-#         self.assertEqual(product_name, data.get("prod_name"))
-#
-#     def test_movement_post_request_with_invalid_data(self):
-#         response = self.app.post(
-#             "/movement",
-#             data=dict(prod_name="", from_loc="", to_loc="", quantity=""),
-#             follow_redirects=True,
-#         )
-#         self.assertEqual(response.status_code, 200)
-#
-#
-# if __name__ == "__main__":
-#     unittest.main()
+import sqlite3
+from unittest import mock
+
+import pytest
+
+from app import app
+
+
+def test_movement1():
+    # test GET request
+    response = app.test_client().get("/movement")
+    assert response.status_code == 200
+
+    # test POST request with complete data
+    # response = app.test_client().post(
+    #     '/movement',
+    #     data={"prod_name": "Green Tea", "from_loc": "MUIC Old building", "to_loc": "location1", "quantity": "10"}
+    # )
+    # assert response.status_code == 500
+    # assert b"Transaction added successfully" in response.data
+
+    # test POST request with missing from_loc data
+    # response = app.test_client().post(
+    #     '/movement',
+    #     data={"prod_name": "product12", "to_loc": "location2", "quantity": "10"}
+    # )
+    # assert response.status_code == 302
+    # assert b"Transaction added successfully" in response.data
+
+    # mock sqlite3.connect to raise an error
+    with mock.patch("sqlite3.connect") as mock_connect:
+        mock_connect.side_effect = sqlite3.Error("Error connecting to database")
+        response = app.test_client().post(
+            "/movement",
+            data={
+                "prod_name": "product12",
+                "from_loc": "location1",
+                "to_loc": "location2",
+                "quantity": "10",
+            },
+        )
+        assert response.status_code == 500

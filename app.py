@@ -10,19 +10,6 @@ from flask import request, url_for
 
 DATABASE_NAME = "inventory.sqlite"
 
-# setting up Flask instance
-app = Flask(__name__)
-app.config["WTF_CSRF_ENABLED"] = False
-app.config["SECRET_KEY"] = "secret-key"
-app.config.from_mapping(
-    SECRET_KEY="dev",
-    DATABASE=os.path.join(app.instance_path, "database", DATABASE_NAME),
-)
-
-# listing views
-link = {x: x for x in ["location", "product", "movement"]}
-link["index"] = "/"
-
 
 def init_database():
     db = sqlite3.connect(DATABASE_NAME)
@@ -76,18 +63,34 @@ def init_database():
     db.commit()
 
 
+def start():
+    # setting up Flask instance
+    cur_app = Flask(__name__)
+    # cur_app.config.update(
+    #     SECRET_KEY="dev",
+    #     DATABASE=os.path.join(cur_app.instance_path, "database", DATABASE_NAME),
+    # )
+    init_database()
+    return cur_app
+
+
+app = start()
+
+# listing views
+link = {x: x for x in ["location", "product", "movement"]}
+link["index"] = "/"
+
+
 @app.route("/")
 def summary():
-    init_database()
+    # init_database()
     msg = None
-    q_data, location, products = None, None, None
+    q_data, location_c, products = None, None, None
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
     try:
-        cursor.execute(
-            "SELECT * FROM location"
-        )  # <---------------------------------FIX THIS
-        location = cursor.fetchall()
+        cursor.execute("SELECT * FROM location")
+        location_c = cursor.fetchall()
         cursor.execute("SELECT * FROM products")
         products = cursor.fetchall()
         cursor.execute(
@@ -105,15 +108,15 @@ def summary():
         "index.html",
         link=link,
         title="Summary",
-        locations=location,
+        locations=location_c,
         products=products,
         database=q_data,
     )
 
 
 @app.route("/product", methods=["POST", "GET"])
-def product() -> Response | str:
-    init_database()
+def product():
+    # init_database()
     msg = None
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
@@ -157,7 +160,7 @@ def product() -> Response | str:
 
 @app.route("/location", methods=["POST", "GET"])
 def location():
-    init_database()
+
     msg = None
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
@@ -263,11 +266,17 @@ def movement():
             alloc_json[row[0]] = {}
             alloc_json[row[0]][row[1]] = row[2]
     alloc_json = json.dumps(alloc_json)
-    return movement1(cursor, db, msg, products, locations, alloc_json, logistics_data, log_summary)
+    return movement1(
+        cursor, db, msg, products, locations, alloc_json, logistics_data, log_summary
+    )
+
 
 @app.route("/movement", methods=["POST", "GET"])
-def movement1(cursor, db, msg, products, locations, alloc_json, logistics_data, log_summary):
-    SUCCESSFUL = "Transaction added successfully"
+def movement1(
+    cursor, db, msg, products, locations, alloc_json, logistics_data, log_summary
+):
+    successful = "Transaction added successfully"
+
     if request.method == "POST":
         prod_name = request.form["prod_name"]
         from_loc = request.form.get("from_loc", None)
@@ -293,7 +302,7 @@ def movement1(cursor, db, msg, products, locations, alloc_json, logistics_data, 
                 (quantity, prod_name),
             )
             db.commit()
-            msg = SUCCESSFUL
+            msg = successful
         elif not to_loc:
             cursor.execute(
                 """
@@ -313,13 +322,17 @@ def movement1(cursor, db, msg, products, locations, alloc_json, logistics_data, 
                 (quantity, prod_name),
             )
             db.commit()
-            msg = SUCCESSFUL
+            msg = successful
         else:
-            cursor.execute("SELECT loc_id FROM location WHERE loc_name == ?", (from_loc,))
+            cursor.execute(
+                "SELECT loc_id FROM location WHERE loc_name == ?", (from_loc,)
+            )
             from_loc = cursor.fetchone()[0]
             cursor.execute("SELECT loc_id FROM location WHERE loc_name == ?", (to_loc,))
             to_loc = cursor.fetchone()[0]
-            cursor.execute("SELECT prod_id FROM products WHERE prod_name == ?", (prod_name,))
+            cursor.execute(
+                "SELECT prod_id FROM products WHERE prod_name == ?", (prod_name,)
+            )
             prod_id = cursor.fetchone()[0]
             cursor.execute(
                 """
@@ -329,7 +342,7 @@ def movement1(cursor, db, msg, products, locations, alloc_json, logistics_data, 
                 (prod_id, from_loc, to_loc, quantity),
             )
             db.commit()
-            msg = SUCCESSFUL
+            msg = successful
         print(msg)
         return redirect(url_for("movement"))
     return render(
@@ -363,7 +376,7 @@ def movement1(cursor, db, msg, products, locations, alloc_json, logistics_data, 
 
 
 @app.route("/delete")
-def delete() -> Response:
+def delete():
     type_ = request.args.get("type")
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
@@ -387,14 +400,12 @@ def delete() -> Response:
         in_place = dict(in_place)
         out_place = dict(out_place)
 
-        # print(in_place, out_place)
         all_place = {}
         for x in in_place.keys():
             if x in out_place.keys():
                 all_place[x] = in_place[x] - out_place[x]
             else:
                 all_place[x] = in_place[x]
-        # print(all_place)
 
         for products_ in all_place.keys():
             cursor.execute(
@@ -404,20 +415,27 @@ def delete() -> Response:
                 (all_place[products_], products_),
             )
 
-        cursor.execute("DELETE FROM location WHERE loc_id == ?", str(id_))
+        # cursor.execute("DELETE FROM location WHERE loc_id == ?", str(id_))
+        cursor.execute(
+            "DELETE FROM location WHERE loc_id == ?",
+            (str(id_),),
+        )
         db.commit()
 
-        # return redirect(url_for("location"))
-        response_data["message"] = "Location deleted successfully"
+        return redirect(url_for("location"))
+        # response_data["message"] = "Location deleted successfully"
 
     elif type_ == "product":
         id_ = request.args.get("prod_id")
-        cursor.execute("DELETE FROM products WHERE prod_id == ?", str(id_))
+        # cursor.execute("DELETE FROM products WHERE prod_id == ?", str(id_))
+        cursor.execute("DELETE FROM products WHERE prod_id == ?", (str(id_),))
         db.commit()
 
-        # return redirect(url_for("product"))
-        response_data["message"] = "Product deleted successfully"
-    return jsonify(response_data)
+        return redirect(url_for("product"))
+        # response_data["message"] = "Product deleted successfully"
+
+    return render(url_for(type_))
+    # return jsonify(response_data)
 
 
 @app.route("/edit", methods=["POST", "GET"])
@@ -462,10 +480,10 @@ def edit() -> Response:
             )
         db.commit()
 
-        # return redirect(url_for("product"))
-        return jsonify(
-            {"prod_id": prod_id, "prod_name": prod_name, "prod_quantity": prod_quantity}
-        )
+        return redirect(url_for("product"))
+        # return jsonify(
+        #     {"prod_id": prod_id, "prod_name": prod_name, "prod_quantity": prod_quantity}
+        # )
 
-    # return render(url_for(type_))
-    return jsonify({"error": "Invalid type"})
+    return render(url_for(type_))
+    # return jsonify({"error": "Invalid type"})
