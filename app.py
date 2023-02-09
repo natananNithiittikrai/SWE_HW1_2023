@@ -420,7 +420,7 @@ def delete():
 
 
 @app.route("/edit", methods=["POST", "GET"])
-def edit() -> Response | str:
+def edit():
     type_ = request.args.get("type")
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
