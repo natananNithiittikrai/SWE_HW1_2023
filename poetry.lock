@@ -532,6 +532,22 @@ async = ["asgiref (>=3.2)"]
 dotenv = ["python-dotenv"]
 
 [[package]]
+name = "flask-cors"
+version = "3.0.10"
+description = "A Flask extension adding a decorator for CORS support"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "Flask-Cors-3.0.10.tar.gz", hash = "sha256:b60839393f3b84a0f3746f6cdca56c1ad7426aa738b70d6c61375857823181de"},
+    {file = "Flask_Cors-3.0.10-py2.py3-none-any.whl", hash = "sha256:74efc975af1194fc7891ff5cd85b0f7478be4f7f59fe158102e91abb72bb4438"},
+]
+
+[package.dependencies]
+Flask = ">=0.9"
+Six = "*"
+
+[[package]]
 name = "flask-wtf"
 version = "1.1.1"
 description = "Form rendering, validation, and CSRF protection for Flask with WTForms."
@@ -1609,4 +1625,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">3.7,<4"
-content-hash = "eff5296658875f5f5b16af26deedfe8d7da68ce00c892af9b49a988cca80303c"
+content-hash = "a5cbe0f9b138ea2e621d1526073dfb130fb1b9c390bf1d3c4e443ceedeb09ba3"

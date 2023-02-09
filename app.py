@@ -7,6 +7,7 @@ import sqlite3
 from flask import Flask, Response, jsonify, redirect
 from flask import render_template as render
 from flask import request, url_for
+from flask_cors import CORS
 from flask_wtf import CSRFProtect
 
 DATABASE_NAME = "inventory.sqlite"
@@ -65,11 +66,15 @@ def init_database():
     db.commit()
 
 
+csrf = CSRFProtect()
+
+
 def start():
     # setting up Flask instance
     cur_app = Flask(__name__)
-    csrf = CSRFProtect()
-    csrf.init_app(app)
+    CORS(cur_app, resources={r"/": {"origins": "", "send_wildcard": "False"}})
+    # csrf = CSRFProtect()
+    # csrf.init_app(cur_app)
     # cur_app.config.update(
     #     SECRET_KEY="dev",
     #     DATABASE=os.path.join(cur_app.instance_path, "database", DATABASE_NAME),
@@ -164,7 +169,6 @@ def product():
 
 @app.route("/location", methods=["POST", "GET"])
 def location():
-
     msg = None
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
