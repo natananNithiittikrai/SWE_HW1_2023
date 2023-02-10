@@ -21,7 +21,7 @@ def test_movement1():
             "quantity": "10",
         },
     )
-    assert response.status_code == 500
+    assert response.status_code == 302
     # assert b"Transaction added successfully" in response.data
 
     # test POST request with missing from_loc data
