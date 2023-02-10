@@ -71,10 +71,10 @@ csrf = CSRFProtect()
 def start():
     # setting up Flask instance
     cur_app = Flask(__name__)
-    cur_app.config["WTF_CSRF_ENABLED"] = False
+    cur_app.config["WTF_CSRF_ENABLED"] = True
     # CORS(cur_app, resources={r"/": {"origins": "", "send_wildcard": "False"}})
 
-    csrf.init_app(cur_app)
+    # csrf.init_app(cur_app)
 
     # cur_app.config.update(
     #     SECRET_KEY="dev",
