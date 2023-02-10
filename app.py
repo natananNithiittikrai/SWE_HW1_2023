@@ -7,8 +7,6 @@ import sqlite3
 from flask import Flask, Response, jsonify, redirect
 from flask import render_template as render
 from flask import request, url_for
-
-# from flask_cors import CORS
 from flask_wtf.csrf import CSRFProtect
 
 DATABASE_NAME = "inventory.sqlite"
@@ -76,7 +74,7 @@ def start():
     cur_app.config["WTF_CSRF_ENABLED"] = True
     # CORS(cur_app, resources={r"/": {"origins": "", "send_wildcard": "False"}})
 
-    # csrf.init_app(cur_app)
+    csrf.init_app(cur_app)
 
     # cur_app.config.update(
     #     SECRET_KEY="dev",
