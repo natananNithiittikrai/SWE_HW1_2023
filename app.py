@@ -14,7 +14,7 @@ DATABASE_NAME = "inventory.sqlite"
 
 def init_database():
     db = sqlite3.connect(DATABASE_NAME)
-    db.set_trace_callback(print)
+    # db.set_trace_callback(print)
     cursor = db.cursor()
 
     # initialize page content
@@ -71,7 +71,7 @@ csrf = CSRFProtect()
 def start():
     # setting up Flask instance
     cur_app = Flask(__name__)
-    cur_app.config["WTF_CSRF_ENABLED"] = True
+    cur_app.config["WTF_CSRF_ENABLED"] = False
     # CORS(cur_app, resources={r"/": {"origins": "", "send_wildcard": "False"}})
 
     csrf.init_app(cur_app)
