@@ -9,6 +9,7 @@ def app():
 
     app.config.update(
         {
+            "SECRET_KEY": "dev",
             "TESTING": True,
         }
     )

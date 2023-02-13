@@ -20,6 +20,7 @@ testcase = "^0.1.0"
 pytest-flask = "^1.2.0"
 flask-wtf = "^1.1.1"
 flask-cors = "^3.0.10"
+config = "^0.5.1"
 
 [tool.poetry.dev-dependencies]
 

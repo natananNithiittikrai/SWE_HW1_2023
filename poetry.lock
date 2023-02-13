@@ -271,6 +271,18 @@ files = [
 ]
 
 [[package]]
+name = "config"
+version = "0.5.1"
+description = "A hierarchical, easy-to-use, powerful configuration module for Python"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "config-0.5.1-py2.py3-none-any.whl", hash = "sha256:79ffa009ff2663cc8ca29e56bcec031c044609d4bafaa4f884132a413101ce84"},
+    {file = "config-0.5.1.zip", hash = "sha256:2dd4a03aa383d30711d5a3325a1858de225328d61950a85be5b74c100f63016d"},
+]
+
+[[package]]
 name = "coverage"
 version = "7.1.0"
 description = "Code coverage measurement for Python"
@@ -1625,4 +1637,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">3.7,<4"
-content-hash = "a5cbe0f9b138ea2e621d1526073dfb130fb1b9c390bf1d3c4e443ceedeb09ba3"
+content-hash = "7cc6766a04d1aa8a58309392793418ff93c486227efa4669d4dc46faa79a7a58"
