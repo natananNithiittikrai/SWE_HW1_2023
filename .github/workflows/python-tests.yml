@@ -114,9 +114,9 @@ jobs:
         if: steps.poetry-cache.outputs.cache-hit != 'true'
         run: poetry install
 
-      - name: Build
-        run: |
-          poetry build
+#      - name: Build
+#        run: |
+#          poetry build
 
       - name: Upload tarball and wheel
         uses: actions/upload-artifact@v2
