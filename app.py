@@ -7,12 +7,8 @@ import sqlite3
 from flask import Flask, redirect
 from flask import render_template as render
 from flask import request, url_for
-
-# from flask_wtf import generate_csrf_token
 from flask_wtf import csrf
-
-# from flask_cors import CORS
-from flask_wtf.csrf import CSRFProtect, generate_csrf
+from flask_wtf.csrf import CSRFProtect
 
 DATABASE_NAME = "inventory.sqlite"
 
@@ -164,7 +160,6 @@ def product():
 
             return redirect(url_for("product"))
 
-    # csrf_token = generate_csrf()
     return render(
         "product.html",
         link=link,
@@ -172,54 +167,6 @@ def product():
         transaction_message=msg,
         title="Products Log",
     )
-
-
-# @app.route("/product", methods=["POST", "GET"])
-# def product():
-#     # init_database()
-#     msg = None
-#     db = sqlite3.connect(DATABASE_NAME)
-#     cursor = db.cursor()
-#
-#     cursor.execute("SELECT * FROM products")
-#     products = cursor.fetchall()
-#
-#     if request.method == "POST":
-#         csrf.generate_csrf()
-#         prod_name = request.form["prod_name"]
-#         quantity = request.form["prod_quantity"]
-#
-#         transaction_allowed = False
-#         if prod_name not in ["", " ", None] and quantity not in ["", " ", None]:
-#             csrf.generate_csrf()
-#             transaction_allowed = True
-#
-#         if transaction_allowed:
-#             csrf.generate_csrf()
-#             try:
-#                 cursor.execute(
-#                     "INSERT INTO products (prod_name, prod_quantity) VALUES (?, ?)",
-#                     (prod_name, quantity),
-#                 )
-#                 db.commit()
-#             except sqlite3.Error as e:
-#                 msg = f"An error occurred: {e.args[0]}"
-#             else:
-#                 msg = f"{prod_name} added successfully"
-#
-#             if msg:
-#                 csrf.generate_csrf()
-#                 print(msg)
-#
-#             return redirect(url_for("product"))
-#
-#     return render(
-#         "product.html",
-#         link=link,
-#         products=products,
-#         transaction_message=msg,
-#         title="Products Log",
-#     )
 
 
 @app.route("/location", methods=["POST", "GET"])
@@ -232,16 +179,13 @@ def location():
     location_data = cursor.fetchall()
 
     if request.method == "POST":
-        csrf.generate_csrf()
         location_name = request.form["location_name"]
 
         transaction_allowed = False
         if location_name not in ["", " ", None]:
-            csrf.generate_csrf()
             transaction_allowed = True
 
         if transaction_allowed:
-            csrf.generate_csrf()
             try:
                 cursor.execute(
                     "INSERT INTO location (loc_name) VALUES (?)", (location_name,)
@@ -343,14 +287,12 @@ def movement1(
     successful = "Transaction added successfully"
 
     if request.method == "POST":
-        csrf.generate_csrf()
         prod_name = request.form["prod_name"]
         from_loc = request.form.get("from_loc", None)
         to_loc = request.form.get("to_loc", None)
         quantity = int(request.form["quantity"])
 
         if not from_loc:
-            csrf.generate_csrf()
             cursor.execute(
                 """
                 INSERT INTO logistics (prod_id, to_loc_id, prod_quantity)
@@ -371,7 +313,6 @@ def movement1(
             db.commit()
             msg = successful
         elif not to_loc:
-            csrf.generate_csrf()
             cursor.execute(
                 """
                 INSERT INTO logistics (prod_id, from_loc_id, prod_quantity)
@@ -392,7 +333,6 @@ def movement1(
             db.commit()
             msg = successful
         else:
-            csrf.generate_csrf()
             cursor.execute(
                 "SELECT loc_id FROM location WHERE loc_name == ?", (from_loc,)
             )
@@ -491,15 +431,12 @@ def edit():
     type_ = request.args.get("type")
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
-    csrf.generate_csrf()
 
     if type_ == "location" and request.method == "POST":
-        csrf.generate_csrf()
         loc_id = request.form["loc_id"]
         loc_name = request.form["loc_name"]
 
         if loc_name:
-            csrf.generate_csrf()
             cursor.execute(
                 "UPDATE location SET loc_name = ? WHERE loc_id == ?",
                 (loc_name, str(loc_id)),
@@ -509,19 +446,16 @@ def edit():
         return redirect(url_for("location"))
 
     elif type_ == "product" and request.method == "POST":
-        csrf.generate_csrf()
         prod_id = request.form["prod_id"]
         prod_name = request.form["prod_name"]
         prod_quantity = request.form["prod_quantity"]
 
         if prod_name:
-            csrf.generate_csrf()
             cursor.execute(
                 "UPDATE products SET prod_name = ? WHERE prod_id == ?",
                 (prod_name, str(prod_id)),
             )
         if prod_quantity:
-            csrf.generate_csrf()
             cursor.execute(
                 "SELECT prod_quantity FROM products WHERE prod_id = ?", (prod_id,)
             )
