@@ -118,12 +118,12 @@ jobs:
 #        run: |
 #          poetry build
 
-      - name: Upload tarball and wheel
-        uses: actions/upload-artifact@v2
-        with:
-          name: dist
-          path: dist
-          if-no-files-found: error
+#      - name: Upload tarball and wheel
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: dist
+#          path: dist
+#          if-no-files-found: error
 
   sonarqube:
     # runs after test-and-coverage job
