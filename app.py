@@ -77,7 +77,6 @@ def start():
     csrf = CSRFProtect()
     csrf.init_app(cur_app)
 
-    cur_app.config["WTF_CSRF_ENABLED"] = False
     cur_app.config["SESSION_COOKIE_SECURE"] = False
 
     # CORS(cur_app, resources={r"/": {"origins": "", "send_wildcard": "False"}})

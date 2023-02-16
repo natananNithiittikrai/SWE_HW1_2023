@@ -7,6 +7,7 @@ from app import app
 
 
 def test_location():
+    app.config["WTF_CSRF_ENABLED"] = False
     # Test GET request
     response = app.test_client().get("/location")
     assert response.status_code == 200

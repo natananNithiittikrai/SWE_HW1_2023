@@ -9,6 +9,7 @@ ENDPOINT = "http://127.0.0.1:5000/product"
 
 
 def test_product():
+    app.config["WTF_CSRF_ENABLED"] = False
     # test GET request
     response = app.test_client().get("/product")
     assert response.status_code == 200

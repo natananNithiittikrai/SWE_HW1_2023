@@ -7,6 +7,7 @@ from app import app
 
 
 def test_movement1():
+    app.config["WTF_CSRF_ENABLED"] = False
     # test GET request
     response = app.test_client().get("/movement")
     assert response.status_code == 200

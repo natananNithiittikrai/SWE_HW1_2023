@@ -6,6 +6,7 @@ from app import app
 
 def test_edit():
     endpoint = "/edit?type=location"
+    app.config["WTF_CSRF_ENABLED"] = False
 
     # Test location type POST request
     response = app.test_client().post(
