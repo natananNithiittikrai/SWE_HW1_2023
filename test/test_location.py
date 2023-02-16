@@ -1,22 +1,25 @@
-import unittest
+import sqlite3
+from unittest import mock
 
-import requests
+import pytest
 
-
-class TestLocation(unittest.TestCase):
-    def setUp(self):
-        self.url = "http://127.0.0.1:5000/location"
-
-    def test_location_addition(self):
-        data = {"location_name": "Test Location"}
-        response = requests.post(self.url, data=data, allow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-
-    def test_location_name_empty(self):
-        data = {"location_name": ""}
-        response = requests.post(self.url, data=data, allow_redirects=True)
-        self.assertEqual(response.status_code, 200)
+from app import app
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_location():
+    app.config["WTF_CSRF_ENABLED"] = False
+    # Test GET request
+    response = app.test_client().get("/location")
+    assert response.status_code == 200
+
+    # Test POST request success
+    response = app.test_client().post("/location", data={"location_name": "location1"})
+    assert response.status_code == 302
+
+    # Test POST request with SQLite error
+    with mock.patch("sqlite3.connect") as mock_connect:
+        mock_connect.side_effect = sqlite3.Error("Error connecting to database")
+        response = app.test_client().post(
+            "/location", data={"location_name": "location1"}
+        )
+        assert response.status_code == 500

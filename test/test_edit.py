@@ -1,56 +1,48 @@
-import unittest
+import sqlite3
+from unittest import mock
 
-import requests
+from app import app
 
 
-class TestEditEndpoint(unittest.TestCase):
-    def test_edit_location(self):
-        url = "http://127.0.0.1:5000/edit?type=location"
-        pre_data = {"loc_id": "8", "loc_name": "Changed Location 1"}
-        response = requests.post(url, data=pre_data, allow_redirects=True)
-        self.assertEqual(pre_data.get("loc_name"), "Test Location")
-        self.assertEqual(response.status_code, 200)
+def test_edit():
+    endpoint = "/edit?type=location"
+    app.config["WTF_CSRF_ENABLED"] = False
 
-        after_data = {"loc_id": "8", "loc_name": "Test Location"}
-        response = requests.post(url, data=after_data, allow_redirects=True)
-        self.assertEqual(response.status_code, 200)
+    # Test location type POST request
+    response = app.test_client().post(
+        endpoint, data={"loc_id": 1, "loc_name": "new_location_name"}
+    )
+    assert response.status_code == 302
 
-        self.assertNotEqual(pre_data.get("loc_name"), after_data.get("loc_name"))
+    # test POST request with type location and missing data
+    response = app.test_client().post(
+        "/edit?type=location", data={"loc_id": "1", "loc_name": ""}
+    )
+    assert response.status_code == 302
 
-        # Extract location name from the response content
-        response_data = response.json()
-        actual_loc_name = response_data.get("loc_name")
-        # Compare the extracted location name to the expected location name
-        self.assertEqual(actual_loc_name, after_data.get("loc_name"))
+    # Test product type POST request
+    response = app.test_client().post(
+        "/edit?type=product",
+        data={"prod_id": 17, "prod_name": "product12", "prod_quantity": 40},
+    )
+    assert response.status_code == 302
 
-    def test_edit_product(self):
-        url = "http://127.0.0.1:5000/edit?type=product"
-        pre_data = {"prod_id": "5", "prod_name": "Oreo1", "prod_quantity": "20"}
-        response = requests.post(url, data=pre_data, allow_redirects=True)
-        self.assertEqual(pre_data.get("prod_name"), "Oreo")
-        self.assertEqual(pre_data.get("prod_quantity"), "20")
-        self.assertEqual(response.status_code, 200)
+    # test POST request with type product and missing data
+    response = app.test_client().post(
+        "/edit?type=product",
+        data={"prod_id": "1", "prod_name": "", "prod_quantity": ""},
+    )
+    assert response.status_code == 302
 
-        after_data = {
-            "prod_id": "5",
-            "prod_name": "Oreo",
-            "prod_quantity": "30",
-        }
-        response = requests.post(url, data=after_data, allow_redirects=True)
-        self.assertEqual(response.status_code, 200)
+    # test GET request with unknown type
+    response = app.test_client().get("/edit?type=unknown")
+    assert response.status_code == 500
 
-        self.assertNotEqual(pre_data.get("prod_name"), after_data.get("prod_name"))
-        self.assertNotEqual(
-            pre_data.get("prod_quantity"), after_data.get("prod_quantity")
+    # Test product type POST request with error
+    with mock.patch("sqlite3.connect") as mock_connect:
+        mock_connect.side_effect = sqlite3.Error("Error connecting to database")
+        response = app.test_client().post(
+            "/edit?type=product",
+            data={"prod_id": 1, "prod_name": "new_product_name", "prod_quantity": 20},
         )
-
-        # Extract location name from the response content
-        response_data = response.json()
-        actual_loc_name = response_data.get("loc_name")
-
-        # Compare the extracted location name to the expected location name
-        self.assertEqual(actual_loc_name, after_data.get("loc_name"))
-
-
-if __name__ == "__main__":
-    unittest.main()
+        assert response.status_code == 500

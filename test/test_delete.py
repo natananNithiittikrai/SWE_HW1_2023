@@ -1,22 +1,14 @@
-import unittest
-
-import requests
+from app import app
 
 
-class DeleteTestCase(unittest.TestCase):
-    def test_delete(self):
-        # Test location deletion
-        response = requests.get(
-            "http://127.0.0.1:5000/delete?type=location&loc_id=10", allow_redirects=True
-        )
-        self.assertEqual(response.status_code, 200)
+def test_delete():
+    with app.test_client() as client:
+        # Test for location delete
+        client.get("/delete?type=location&loc_id=1")
+        result = client.get("/location")
+        assert b"Location 1" not in result.data
 
-        # Test product deletion
-        response = requests.get(
-            "http://127.0.0.1:5000/delete?type=product&prod_id=10", allow_redirects=True
-        )
-        self.assertEqual(response.status_code, 200)
-
-
-if __name__ == "__main__":
-    unittest.main()
+        # Test for product delete
+        client.get("/delete?type=product&prod_id=1")
+        result = client.get("/product")
+        assert b"Product 1" not in result.data

@@ -7,13 +7,25 @@ F
 templates/product.html,a\e\ae3626ae0d5160190503948d76d07ffdd6c219c9
 D
 templates/index.html,f\6\f69b8ce2e31684ae06f1b3e84821e07e3dfddb2f
-G
-templates/movement.html,2\5\2576bcb05a100da3da1590ebd0c2cdc32fa54065
 L
 templates/base-template.html,0\5\05ab165c4b980bece38205e08c5a4e085f8c5b6b
+9
+	README.md,8\e\8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d
+G
+templates/movement.html,2\5\2576bcb05a100da3da1590ebd0c2cdc32fa54065
+@
+test/conftest.py,e\1\e14c6d1385baa4fc3ea84caa411cc2844bf2e038
 E
 test/test_location.py,b\2\b23aed40683543bb2a8856316bf711182b650a51
 D
+test/test_summary.py,3\d\3d82569f3f2b77ebeb7c222f6e5fdb9544d29d61
+E
+test/test_movement.py,5\3\53b1dbcec4fc69707fd358dd98f4c202df3fbfe7
+G
+.pre-commit-config.yaml,e\7\e7d14d429f898757a423156de0e8c49d75240694
+D
 test/test_product.py,d\7\d7eb93bb0e5aa3687bcdee9a3bb11904771f49bc
-9
-	README.md,8\e\8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d
+C
+test/test_delete.py,1\a\1a7567e986f868b2891a8bbbb26dd302636c07d4
+R
+".github/workflows/python-tests.yml,e\9\e917c7a1acef149c48724bffc3c116280232a0f3
