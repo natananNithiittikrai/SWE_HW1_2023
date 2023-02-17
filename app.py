@@ -87,6 +87,9 @@ app = start()
 link = {x: x for x in ["location", "product", "movement"]}
 link["index"] = "/"
 
+select_from_location = "SELECT * FROM location"
+select_from_product = "SELECT * FROM products"
+
 
 @app.route("/")
 def summary():
@@ -95,10 +98,11 @@ def summary():
     q_data, location_c, products = None, None, None
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
+
     try:
-        cursor.execute("SELECT * FROM location")
+        cursor.execute(select_from_location)
         location_c = cursor.fetchall()
-        cursor.execute("SELECT * FROM products")
+        cursor.execute(select_from_product)
         products = cursor.fetchall()
         cursor.execute(
             """
@@ -121,14 +125,11 @@ def summary():
     )
 
 
-# ...
-
-
 @app.route("/product", methods=["GET"])
 def get_products():
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM products")
+    cursor.execute(select_from_product)
     products = cursor.fetchall()
     return render("product.html", link=link, products=products, title="Products Log")
 
@@ -159,7 +160,7 @@ def add_product():
         if msg:
             print(msg)
 
-    cursor.execute("SELECT * FROM products")
+    cursor.execute(select_from_product)
     products = cursor.fetchall()
     return render(
         "product.html",
@@ -175,7 +176,7 @@ def get_location():
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
 
-    cursor.execute("SELECT * FROM location")
+    cursor.execute(select_from_location)
     location_data = cursor.fetchall()
 
     return render(
@@ -215,7 +216,7 @@ def post_location():
 
         return redirect(url_for("get_location"))
 
-    cursor.execute("SELECT * FROM location")
+    cursor.execute(select_from_location)
     location_data = cursor.fetchall()
 
     return render(
@@ -228,85 +229,6 @@ def post_location():
 
 
 @app.route("/movement", methods=["GET"])
-def get_movement():
-    init_database()
-    msg = None
-    db = sqlite3.connect(DATABASE_NAME)
-    cursor = db.cursor()
-
-    cursor.execute("SELECT * FROM logistics")
-    logistics_data = cursor.fetchall()
-
-    # add suggestive content for page
-    cursor.execute("SELECT prod_id, prod_name, unallocated_quantity FROM products")
-    products = cursor.fetchall()
-
-    cursor.execute("SELECT loc_id, loc_name FROM location")
-    locations = cursor.fetchall()
-
-    log_summary = []
-    for p_id in [x[0] for x in products]:
-        cursor.execute("SELECT prod_name FROM products WHERE prod_id = ?", (p_id,))
-        temp_prod_name = cursor.fetchone()
-
-        for l_id in [x[0] for x in locations]:
-            cursor.execute("SELECT loc_name FROM location WHERE loc_id = ?", (l_id,))
-            temp_loc_name = cursor.fetchone()
-
-            cursor.execute(
-                """
-            SELECT SUM(log.prod_quantity)
-            FROM logistics log
-            WHERE log.prod_id = ? AND log.to_loc_id = ?
-            """,
-                (p_id, l_id),
-            )
-            sum_to_loc = cursor.fetchone()
-
-            cursor.execute(
-                """
-            SELECT SUM(log.prod_quantity)
-            FROM logistics log
-            WHERE log.prod_id = ? AND log.from_loc_id = ?
-            """,
-                (p_id, l_id),
-            )
-            sum_from_loc = cursor.fetchone()
-
-            if sum_from_loc[0] is None:
-                sum_from_loc = (0,)
-            if sum_to_loc[0] is None:
-                sum_to_loc = (0,)
-
-            log_summary += [
-                (temp_prod_name + temp_loc_name + (sum_to_loc[0] - sum_from_loc[0],))
-            ]
-
-    alloc_json = {}
-    for row in log_summary:
-        try:
-            if row[1] in alloc_json[row[0]].keys():
-                alloc_json[row[0]][row[1]] += row[2]
-            else:
-                alloc_json[row[0]][row[1]] = row[2]
-        except (KeyError, TypeError):
-            alloc_json[row[0]] = {}
-            alloc_json[row[0]][row[1]] = row[2]
-    alloc_json = json.dumps(alloc_json)
-
-    return render(
-        "movement.html",
-        title="ProductMovement",
-        link=link,
-        trans_message=msg,
-        products=products,
-        locations=locations,
-        allocated=alloc_json,
-        logs=logistics_data,
-        database=log_summary,
-    )
-
-
 @app.route("/movement", methods=["POST"])
 def movement():
     init_database()
@@ -373,15 +295,18 @@ def movement():
             alloc_json[row[0]] = {}
             alloc_json[row[0]][row[1]] = row[2]
     alloc_json = json.dumps(alloc_json)
-    return movement1(
-        cursor, db, msg, products, locations, alloc_json, logistics_data, log_summary
-    )
+    return movement1(products, locations, alloc_json, log_summary)
 
 
 # @app.route("/movement", methods=["POST"])
-def movement1(
-    cursor, db, msg, products, locations, alloc_json, logistics_data, log_summary
-):
+def movement1(products, locations, alloc_json, log_summary):
+    init_database()
+    msg = None
+    db = sqlite3.connect(DATABASE_NAME)
+    cursor = db.cursor()
+
+    cursor.execute("SELECT * FROM logistics")
+    logistics_data = cursor.fetchall()
     successful = "Transaction added successfully"
 
     if request.method == "POST":
