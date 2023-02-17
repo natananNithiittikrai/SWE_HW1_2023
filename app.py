@@ -232,12 +232,8 @@ def post_location():
 @app.route("/movement", methods=["POST"])
 def movement():
     init_database()
-    msg = None
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
-
-    cursor.execute("SELECT * FROM logistics")
-    logistics_data = cursor.fetchall()
 
     # add suggestive content for page
     cursor.execute("SELECT prod_id, prod_name, unallocated_quantity FROM products")
@@ -300,7 +296,6 @@ def movement():
 
 # @app.route("/movement", methods=["POST"])
 def movement1(products, locations, alloc_json, log_summary):
-    init_database()
     msg = None
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
