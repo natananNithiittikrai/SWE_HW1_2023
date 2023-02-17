@@ -16,13 +16,13 @@ def test_product():
 
     # test POST request
     response = app.test_client().post(
-        "/product", data={"prod_name": "product12", "prod_quantity": "10"}
+        "/product/add", data={"prod_name": "product12", "prod_quantity": "10"}
     )
-    assert response.status_code == 302
+    assert response.status_code == 200
 
     # test POST request with missing data
     response = app.test_client().post(
-        "/product", data={"prod_name": "", "prod_quantity": ""}
+        "/product/add", data={"prod_name": "", "prod_quantity": ""}
     )
     assert response.status_code == 200
 
@@ -30,7 +30,7 @@ def test_product():
     with mock.patch("sqlite3.connect") as mock_connect:
         mock_connect.side_effect = sqlite3.Error("Error connecting to database")
         response = app.test_client().post(
-            "/product", data={"prod_name": "product12", "prod_quantity": "10"}
+            "/product/add", data={"prod_name": "product12", "prod_quantity": "10"}
         )
         assert response.status_code == 500
 

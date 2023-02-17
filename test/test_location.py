@@ -13,13 +13,15 @@ def test_location():
     assert response.status_code == 200
 
     # Test POST request success
-    response = app.test_client().post("/location", data={"location_name": "location1"})
+    response = app.test_client().post(
+        "/location/add", data={"location_name": "location1"}
+    )
     assert response.status_code == 302
 
     # Test POST request with SQLite error
     with mock.patch("sqlite3.connect") as mock_connect:
         mock_connect.side_effect = sqlite3.Error("Error connecting to database")
         response = app.test_client().post(
-            "/location", data={"location_name": "location1"}
+            "/location/add", data={"location_name": "location1"}
         )
         assert response.status_code == 500

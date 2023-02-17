@@ -4,10 +4,9 @@ import os
 import sqlite3
 
 # imports - third party imports
-from flask import Flask, redirect
+from flask import Flask, jsonify, redirect
 from flask import render_template as render
 from flask import request, url_for
-from flask_wtf import csrf
 from flask_wtf.csrf import CSRFProtect
 
 DATABASE_NAME = "inventory.sqlite"
@@ -74,9 +73,6 @@ def start():
     csrf.init_app(cur_app)
 
     cur_app.config["SESSION_COOKIE_SECURE"] = False
-
-    # CORS(cur_app, resources={r"/": {"origins": "", "send_wildcard": "False"}})
-
     cur_app.config.update(
         SECRET_KEY="dev",
         DATABASE=os.path.join(cur_app.instance_path, "database", DATABASE_NAME),
@@ -125,41 +121,46 @@ def summary():
     )
 
 
-@app.route("/product", methods=["POST", "GET"])
-def product():
-    # init_database()
+# ...
+
+
+@app.route("/product", methods=["GET"])
+def get_products():
+    db = sqlite3.connect(DATABASE_NAME)
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM products")
+    products = cursor.fetchall()
+    return render("product.html", link=link, products=products, title="Products Log")
+
+
+@app.route("/product/add", methods=["POST"])
+def add_product():
     msg = None
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
+    prod_name = request.form["prod_name"]
+    quantity = request.form["prod_quantity"]
+    transaction_allowed = False
+    if prod_name not in ["", " ", None] and quantity not in ["", " ", None]:
+        transaction_allowed = True
+
+    if transaction_allowed:
+        try:
+            cursor.execute(
+                "INSERT INTO products (prod_name, prod_quantity) VALUES (?, ?)",
+                (prod_name, quantity),
+            )
+            db.commit()
+        except sqlite3.Error as e:
+            msg = f"An error occurred: {e.args[0]}"
+        else:
+            msg = f"{prod_name} added successfully"
+
+        if msg:
+            print(msg)
 
     cursor.execute("SELECT * FROM products")
     products = cursor.fetchall()
-
-    if request.method == "POST":
-        prod_name = request.form["prod_name"]
-        quantity = request.form["prod_quantity"]
-
-        transaction_allowed = False
-        if prod_name not in ["", " ", None] and quantity not in ["", " ", None]:
-            transaction_allowed = True
-
-        if transaction_allowed:
-            try:
-                cursor.execute(
-                    "INSERT INTO products (prod_name, prod_quantity) VALUES (?, ?)",
-                    (prod_name, quantity),
-                )
-                db.commit()
-            except sqlite3.Error as e:
-                msg = f"An error occurred: {e.args[0]}"
-            else:
-                msg = f"{prod_name} added successfully"
-
-            if msg:
-                print(msg)
-
-            return redirect(url_for("product"))
-
     return render(
         "product.html",
         link=link,
@@ -169,37 +170,53 @@ def product():
     )
 
 
-@app.route("/location", methods=["POST", "GET"])
-def location():
-    msg = None
+@app.route("/location", methods=["GET"])
+def get_location():
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
 
     cursor.execute("SELECT * FROM location")
     location_data = cursor.fetchall()
 
-    if request.method == "POST":
-        location_name = request.form["location_name"]
+    return render(
+        "location.html",
+        link=link,
+        locations=location_data,
+        transaction_message=None,
+        title="Vending Machine Locations",
+    )
 
-        transaction_allowed = False
-        if location_name not in ["", " ", None]:
-            transaction_allowed = True
 
-        if transaction_allowed:
-            try:
-                cursor.execute(
-                    "INSERT INTO location (loc_name) VALUES (?)", (location_name,)
-                )
-                db.commit()
-            except sqlite3.Error as e:
-                msg = f"An error occurred: {e.args[0]}"
-            else:
-                msg = f"{location_name} added successfully"
+@app.route("/location/add", methods=["POST"])
+def post_location():
+    msg = None
+    db = sqlite3.connect(DATABASE_NAME)
+    cursor = db.cursor()
 
-            if msg:
-                print(msg)
+    location_name = request.form["location_name"]
 
-            return redirect(url_for("location"))
+    transaction_allowed = False
+    if location_name not in ["", " ", None]:
+        transaction_allowed = True
+
+    if transaction_allowed:
+        try:
+            cursor.execute(
+                "INSERT INTO location (loc_name) VALUES (?)", (location_name,)
+            )
+            db.commit()
+        except sqlite3.Error as e:
+            msg = f"An error occurred: {e.args[0]}"
+        else:
+            msg = f"{location_name} added successfully"
+
+        if msg:
+            print(msg)
+
+        return redirect(url_for("get_location"))
+
+    cursor.execute("SELECT * FROM location")
+    location_data = cursor.fetchall()
 
     return render(
         "location.html",
@@ -210,7 +227,87 @@ def location():
     )
 
 
-@app.route("/movement", methods=["POST", "GET"])
+@app.route("/movement", methods=["GET"])
+def get_movement():
+    init_database()
+    msg = None
+    db = sqlite3.connect(DATABASE_NAME)
+    cursor = db.cursor()
+
+    cursor.execute("SELECT * FROM logistics")
+    logistics_data = cursor.fetchall()
+
+    # add suggestive content for page
+    cursor.execute("SELECT prod_id, prod_name, unallocated_quantity FROM products")
+    products = cursor.fetchall()
+
+    cursor.execute("SELECT loc_id, loc_name FROM location")
+    locations = cursor.fetchall()
+
+    log_summary = []
+    for p_id in [x[0] for x in products]:
+        cursor.execute("SELECT prod_name FROM products WHERE prod_id = ?", (p_id,))
+        temp_prod_name = cursor.fetchone()
+
+        for l_id in [x[0] for x in locations]:
+            cursor.execute("SELECT loc_name FROM location WHERE loc_id = ?", (l_id,))
+            temp_loc_name = cursor.fetchone()
+
+            cursor.execute(
+                """
+            SELECT SUM(log.prod_quantity)
+            FROM logistics log
+            WHERE log.prod_id = ? AND log.to_loc_id = ?
+            """,
+                (p_id, l_id),
+            )
+            sum_to_loc = cursor.fetchone()
+
+            cursor.execute(
+                """
+            SELECT SUM(log.prod_quantity)
+            FROM logistics log
+            WHERE log.prod_id = ? AND log.from_loc_id = ?
+            """,
+                (p_id, l_id),
+            )
+            sum_from_loc = cursor.fetchone()
+
+            if sum_from_loc[0] is None:
+                sum_from_loc = (0,)
+            if sum_to_loc[0] is None:
+                sum_to_loc = (0,)
+
+            log_summary += [
+                (temp_prod_name + temp_loc_name + (sum_to_loc[0] - sum_from_loc[0],))
+            ]
+
+    alloc_json = {}
+    for row in log_summary:
+        try:
+            if row[1] in alloc_json[row[0]].keys():
+                alloc_json[row[0]][row[1]] += row[2]
+            else:
+                alloc_json[row[0]][row[1]] = row[2]
+        except (KeyError, TypeError):
+            alloc_json[row[0]] = {}
+            alloc_json[row[0]][row[1]] = row[2]
+    alloc_json = json.dumps(alloc_json)
+
+    return render(
+        "movement.html",
+        title="ProductMovement",
+        link=link,
+        trans_message=msg,
+        products=products,
+        locations=locations,
+        allocated=alloc_json,
+        logs=logistics_data,
+        database=log_summary,
+    )
+
+
+@app.route("/movement", methods=["POST"])
 def movement():
     init_database()
     msg = None
@@ -281,6 +378,7 @@ def movement():
     )
 
 
+# @app.route("/movement", methods=["POST"])
 def movement1(
     cursor, db, msg, products, locations, alloc_json, logistics_data, log_summary
 ):
@@ -413,7 +511,7 @@ def delete():
         )
         db.commit()
 
-        return redirect(url_for("location"))
+        return redirect(url_for("get_location"))
 
     elif type_ == "product":
         id_ = request.args.get("prod_id")
@@ -421,18 +519,18 @@ def delete():
         cursor.execute("DELETE FROM products WHERE prod_id == ?", (str(id_),))
         db.commit()
 
-        return redirect(url_for("product"))
+        return redirect(url_for("get_products"))
 
     return render(url_for(type_))
 
 
-@app.route("/edit", methods=["POST", "GET"])
-def edit():
+@app.route("/edit", methods=["POST"])
+def edit_post():
     type_ = request.args.get("type")
     db = sqlite3.connect(DATABASE_NAME)
     cursor = db.cursor()
 
-    if type_ == "location" and request.method == "POST":
+    if type_ == "location":
         loc_id = request.form["loc_id"]
         loc_name = request.form["loc_name"]
 
@@ -443,9 +541,9 @@ def edit():
             )
             db.commit()
 
-        return redirect(url_for("location"))
+        return redirect(url_for("get_location"))
 
-    elif type_ == "product" and request.method == "POST":
+    elif type_ == "product":
         prod_id = request.form["prod_id"]
         prod_name = request.form["prod_name"]
         prod_quantity = request.form["prod_quantity"]
@@ -467,6 +565,10 @@ def edit():
             )
         db.commit()
 
-        return redirect(url_for("product"))
+        return redirect(url_for("get_products"))
 
+
+@app.route("/edit", methods=["GET"])
+def edit_get():
+    type_ = request.args.get("type")
     return render(url_for(type_))

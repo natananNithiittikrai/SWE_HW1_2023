@@ -20,9 +20,9 @@
                         <td>
                             <button name="button" type="button" class="btn btn-success" value= "edit" data-toggle="modal" data-target="#edit_{{ location[0] }}" >edit</button><br>
                                 <div id="edit_{{ location[0] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="trans_message" aria-hidden="true">
-                                <form action="{{ url_for('edit', type='location') }}" method="post">
+                                <form action="{{ url_for('edit_get', type='location') }}" method="post">
 {#                                    {{ form.csrf_token }}#}
-{#                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />#}
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-body"><label>
@@ -43,9 +43,8 @@
                 {% endfor %}
                 <!-- Inserting data -->
                 <tr>
-{#                    <form action = "{{ url_for('location') }}" method = "POST">#}
-{#                        {{ form.csrf_token }}#}
-{#                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />#}
+                    <form action = "{{ url_for('post_location') }}" method = "POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                     <td>
                         <input name= "location_name" placeholder="location Name" required autofocus>
                     </td>

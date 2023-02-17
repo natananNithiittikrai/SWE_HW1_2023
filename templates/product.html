@@ -21,10 +21,8 @@
                         <td>
                             <button name="button" type="button" class="btn btn-success" value= "edit" data-toggle="modal" data-target="#edit_{{ product[0] }}" >edit</button><br>
                             <div id="edit_{{ product[0] }}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="trans_message" aria-hidden="true">
-{#                                <form action="{{ url_for('edit', type='product') }}" method="post" class="base_form">#}
-{#                                    {{ form.csrf_token }}#}
-{#                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />#}
-{#                                    <input type="hidden" name="my_csrf_token" value="{{ csrf_token() }}" />#}
+                               <form action="{{ url_for('edit_get', type='product') }}" method="post" class="base_form">
+                                   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-body"><input name="prod_name" placeholder="{{ product[1] }}"></div>
@@ -61,10 +59,8 @@
                 {% endfor %}
                 <!-- Inserting data -->
                 <tr>
-                    <form action = "{{ url_for('product') }}" method = "POST">
-{#                        {{ form.csrf_token }}#}
-{#                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />#}
-{#                        <input type="hidden" name="my_csrf_token" value="{{ csrf_token() }}" />#}
+                    <form action = "{{ url_for('add_product') }}" method = "POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                         <td>
                             <input name = "prod_name" placeholder="Product Name" required autofocus>
                         </td>
