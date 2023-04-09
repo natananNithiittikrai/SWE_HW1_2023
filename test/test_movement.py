@@ -14,7 +14,7 @@ def test_movement():
     response = app.test_client().post(
         "/movement",
         data={
-            "prod_name": "Green Tea",
+            "prod_name": "Pringles",
             "from_loc": "MUIC Old building",
             "to_loc": "location1",
             "quantity": "10",

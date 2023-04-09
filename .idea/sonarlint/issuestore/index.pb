@@ -25,5 +25,3 @@ D
 test/test_summary.py,3\d\3d82569f3f2b77ebeb7c222f6e5fdb9544d29d61
 E
 test/test_location.py,b\2\b23aed40683543bb2a8856316bf711182b650a51
-E
-test/test_movement.py,5\3\53b1dbcec4fc69707fd358dd98f4c202df3fbfe7
